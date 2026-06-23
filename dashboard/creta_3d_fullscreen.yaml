@@ -6,5 +6,5 @@ views:
     panel: true
     cards:
       - type: iframe
-        url: /local/creta3d/index.html
+        url: /local/creta3d/index.html?v=6
         aspect_ratio: 56%
