@@ -511,6 +511,29 @@ class HyundaiKiaConnectDataUpdateCoordinator(DataUpdateCoordinator):
             "stop valet mode",
         )
 
+    async def async_capture_svm(self, vehicle_id: str):
+        """Capture a 360 Surround View image (car must be parked, engine off)."""
+        if self._action_lock.locked():
+            raise HomeAssistantError(
+                "Another vehicle action is in progress. Please wait and try again."
+            )
+        async with self._action_lock:
+            await self.async_check_and_refresh_token()
+            try:
+                ok = await self.hass.async_add_executor_job(
+                    self.vehicle_manager.svm_capture, vehicle_id
+                )
+            except Exception as err:
+                raise HomeAssistantError(
+                    f"Failed to capture 360 view: {err}"
+                ) from err
+        if not ok:
+            raise HomeAssistantError(
+                "360 capture failed — make sure the car is parked with the engine off, "
+                "then try again."
+            )
+        self.async_update_listeners()
+
     async def async_set_v2l_limit(self, vehicle_id: str, limit: int):
         await self._async_send_action(
             vehicle_id,

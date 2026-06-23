@@ -162,6 +162,15 @@ SWITCH_DESCRIPTIONS: Final[tuple[HyundaiKiaSwitchDescription, ...]] = (
             coordinator.async_set_off_peak_charge_only_enabled(vid, False)
         ),
     ),
+    HyundaiKiaSwitchDescription(
+        key="valet_mode_on",
+        translation_key="valet_mode_on",
+        icon="mdi:account-tie",
+        value_fn=lambda vehicle: vehicle.valet_mode_on,
+        exists_fn=lambda vehicle: vehicle.valet_mode_on is not None,
+        on_fn=lambda coordinator, vid: coordinator.async_start_valet_mode(vid),
+        off_fn=lambda coordinator, vid: coordinator.async_stop_valet_mode(vid),
+    ),
 )
 
 

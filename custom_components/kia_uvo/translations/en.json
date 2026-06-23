@@ -795,6 +795,12 @@
     "button": {
       "force_refresh": {
         "name": "Force Refresh"
+      },
+      "horn_and_hazards": {
+        "name": "Horn & Hazards"
+      },
+      "capture_svm": {
+        "name": "Capture 360 View"
       }
     },
     "cover": {
@@ -841,6 +847,9 @@
       },
       "ev_schedule_charge_enabled": {
         "name": "Scheduled charging"
+      },
+      "valet_mode_on": {
+        "name": "Valet Mode"
       }
     },
     "climate": {
@@ -862,6 +871,11 @@
     "device_tracker": {
       "location": {
         "name": "Location"
+      }
+    },
+    "image": {
+      "svm_image": {
+        "name": "360 Surround View"
       }
     }
   }

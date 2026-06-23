@@ -14,7 +14,7 @@
     "hyundai_kia_connect_api"
   ],
   "requirements": [
-    "hyundai_kia_connect_api @ https://github.com/airtonac/hyundai_kia_connect_api/archive/8b8374ca309a16061b2d79b834328150435ef2fe.tar.gz"
+    "hyundai_kia_connect_api @ https://github.com/airtonac/hyundai_kia_connect_api/archive/5ad71484b014aace684b01aef4441b26e7f12f67.tar.gz"
   ],
-  "version": "3.4.0+creta3"
+  "version": "3.4.0+creta4"
 }

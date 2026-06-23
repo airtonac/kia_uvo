@@ -32,6 +32,18 @@ BUTTON_DESCRIPTIONS: Final[tuple[HyundaiKiaButtonDescription, ...]] = (
         icon="mdi:refresh",
         press_action="async_force_refresh_vehicle",
     ),
+    HyundaiKiaButtonDescription(
+        key="horn_and_hazards",
+        translation_key="horn_and_hazards",
+        icon="mdi:bullhorn",
+        press_action="async_start_hazard_lights_and_horn",
+    ),
+    HyundaiKiaButtonDescription(
+        key="capture_svm",
+        translation_key="capture_svm",
+        icon="mdi:cctv",
+        press_action="async_capture_svm",
+    ),
 )
 
 
