@@ -147,8 +147,8 @@
         tex.load(url, onload, undefined, ()=>msg('no image'));
       }
     }
-    // image entity content endpoint
-    loadAtlas('/api/image_proxy/image.creta_360_surround_view?'+Date.now(), true);
+    // use the well-lit first capture (static) by default; "New capture" pulls live
+    loadAtlas('svm.jpg?'+Date.now(), false);
 
     // car model in the center
     const draco=new DRACOLoader(); draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
