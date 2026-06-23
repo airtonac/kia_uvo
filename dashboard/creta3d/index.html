@@ -2,55 +2,159 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Creta 3D</title>
   <style>
-    html, body { margin: 0; height: 100%; overflow: hidden;
-      background: radial-gradient(circle at 50% 35%, #1b2735 0%, #0d1117 70%); }
-    model-viewer {
-      width: 100%; height: 100%;
-      --poster-color: transparent;
-      --progress-bar-color: #41bdf5;
-    }
-    .hud {
-      position: absolute; top: 12px; left: 16px;
-      font-family: -apple-system, Roboto, Arial, sans-serif;
-      color: #e6edf3; pointer-events: none; text-shadow: 0 1px 3px #000;
-    }
-    .hud .title { font-size: 18px; font-weight: 700; letter-spacing: .5px; }
+    html, body { margin: 0; height: 100%; width: 100%; overflow: hidden;
+      background: radial-gradient(circle at 50% 38%, #1b2735 0%, #0a0e14 72%);
+      font-family: -apple-system, Roboto, "Segoe UI", Arial, sans-serif; }
+    model-viewer { width: 100vw; height: 100vh; --progress-bar-color: #41bdf5; }
+
+    .hud { position: fixed; top: 14px; left: 18px; color: #e6edf3;
+      pointer-events: none; text-shadow: 0 1px 4px #000; z-index: 5; }
+    .hud .title { font-size: 20px; font-weight: 800; letter-spacing: .6px; }
     .hud .sub { font-size: 12px; opacity: .7; }
-    .hint {
-      position: absolute; bottom: 10px; width: 100%; text-align: center;
-      font-family: -apple-system, Roboto, Arial, sans-serif;
-      color: #8b949e; font-size: 11px; pointer-events: none;
-    }
+
+    .ctl { position: fixed; z-index: 10; display: flex; flex-direction: column;
+      align-items: center; gap: 4px; cursor: pointer; user-select: none;
+      pointer-events: auto; transition: transform .12s ease; }
+    .ctl:active { transform: scale(.92); }
+    .ctl .dot { width: 54px; height: 54px; border-radius: 50%;
+      background: rgba(20,28,38,.55); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.18); display: flex; align-items: center;
+      justify-content: center; font-size: 24px; box-shadow: 0 4px 18px rgba(0,0,0,.45); }
+    .ctl .lbl { font-size: 11px; color: #cdd9e5; text-shadow: 0 1px 3px #000;
+      background: rgba(10,14,20,.35); padding: 1px 7px; border-radius: 8px; white-space: nowrap; }
+    .ctl.on .dot { border-color: #41bdf5; box-shadow: 0 0 16px rgba(65,189,245,.6); }
+
+    #c-camera  { top: 9%;  left: 50%; transform: translateX(-50%); }
+    #c-climate { top: 40%; left: 16%; }
+    #c-valet   { top: 40%; right: 16%; }
+    #c-lock    { bottom: 20%; left: 22%; }
+    #c-horn    { bottom: 11%; left: 50%; transform: translateX(-50%); }
+    #c-windows { bottom: 20%; right: 22%; }
+
+    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: rgba(20,28,38,.92); color: #e6edf3; padding: 10px 16px; border-radius: 10px;
+      font-size: 13px; z-index: 20; opacity: 0; transition: opacity .25s; pointer-events: none;
+      border: 1px solid rgba(255,255,255,.12); max-width: 80vw; text-align: center; }
+    #toast.show { opacity: 1; }
+    .hint { position: fixed; bottom: 6px; width: 100%; text-align: center;
+      color: #56606b; font-size: 10px; z-index: 4; pointer-events: none; }
   </style>
   <script type="module"
     src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 </head>
 <body>
   <model-viewer
-    src="creta.glb?v=2"
-    alt="Hyundai Creta 3D model"
+    src="creta.glb?v=4"
+    alt="Hyundai Creta 3D"
     camera-controls
     touch-action="pan-y"
     auto-rotate
-    auto-rotate-delay="500"
-    rotation-per-second="18deg"
+    auto-rotate-delay="3000"
+    rotation-per-second="14deg"
     interaction-prompt="none"
     shadow-intensity="1.2"
-    shadow-softness="0.8"
+    shadow-softness="0.9"
     exposure="1.05"
     environment-image="neutral"
-    camera-orbit="40deg 72deg 105%"
-    min-camera-orbit="auto auto 60%"
-    max-camera-orbit="auto auto 160%"
+    camera-orbit="35deg 72deg 105%"
+    min-camera-orbit="auto auto 55%"
+    max-camera-orbit="auto auto 170%"
     field-of-view="30deg">
-    <div class="hud">
-      <div class="title">HYUNDAI CRETA</div>
-      <div class="sub">Platinum &middot; Live in Home Assistant</div>
-    </div>
-    <div class="hint">drag to rotate &middot; pinch / scroll to zoom</div>
   </model-viewer>
+
+  <div class="hud">
+    <div class="title">HYUNDAI CRETA</div>
+    <div class="sub">Platinum &middot; Live</div>
+  </div>
+
+  <div class="ctl" id="c-camera"  data-act="capture360"><div class="dot">&#128247;</div><div class="lbl">360&deg; View</div></div>
+  <div class="ctl" id="c-climate" data-act="climate"><div class="dot">&#10052;&#65039;</div><div class="lbl">Climate</div></div>
+  <div class="ctl" id="c-valet"   data-act="valet"><div class="dot">&#127359;</div><div class="lbl">Valet</div></div>
+  <div class="ctl" id="c-lock"    data-act="lock"><div class="dot">&#128274;</div><div class="lbl">Lock</div></div>
+  <div class="ctl" id="c-horn"    data-act="horn"><div class="dot">&#128227;</div><div class="lbl">Horn</div></div>
+  <div class="ctl" id="c-windows" data-act="windows"><div class="dot">&#129003;</div><div class="lbl">Windows</div></div>
+
+  <div id="toast"></div>
+  <div class="hint">drag to rotate &middot; pinch to zoom &middot; tap a control</div>
+
+  <script>
+    const ENT = {
+      lock: "lock.creta_door_lock",
+      climate: "switch.creta_climate",
+      valet: "switch.creta_valet_mode",
+      horn: "button.creta_horn_hazards",
+      camera: "button.creta_capture_360_view",
+      windows: ["cover.creta_front_left_window","cover.creta_front_right_window",
+                "cover.creta_back_left_window","cover.creta_back_right_window"],
+    };
+
+    function getToken() {
+      try { const t = JSON.parse(localStorage.getItem("hassTokens")); if (t && t.access_token) return t.access_token; } catch (e) {}
+      for (const k of Object.keys(localStorage)) {
+        try { const v = JSON.parse(localStorage.getItem(k)); if (v && v.access_token) return v.access_token; } catch (e) {}
+      }
+      return null;
+    }
+
+    function toast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.classList.add("show");
+      clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 3200);
+    }
+
+    async function callService(domain, service, data) {
+      const token = getToken();
+      if (!token) { toast("Open this inside Home Assistant (not signed in)"); return; }
+      try {
+        const r = await fetch(`/api/services/${domain}/${service}`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        toast(r.ok ? ("✓ Sent: " + service) : ("✗ " + service + " (" + r.status + ")"));
+      } catch (e) { toast("✗ " + e.message); }
+    }
+
+    async function stateOf(entity) {
+      const token = getToken();
+      try {
+        const r = await fetch(`/api/states/${entity}`, { headers: { "Authorization": `Bearer ${token}` } });
+        if (!r.ok) return null; const j = await r.json(); return j && j.state;
+      } catch (e) { return null; }
+    }
+
+    const ACTIONS = {
+      capture360: () => { toast("Capturing 360° (engine must be off)…"); callService("button", "press", { entity_id: ENT.camera }); },
+      horn:       () => { toast("Horn + hazards (engine must be off)…"); callService("button", "press", { entity_id: ENT.horn }); },
+      lock: async () => {
+        const s = await stateOf(ENT.lock);
+        callService("lock", s === "locked" ? "unlock" : "lock", { entity_id: ENT.lock });
+      },
+      climate: () => callService("switch", "toggle", { entity_id: ENT.climate }),
+      valet:   () => callService("switch", "toggle", { entity_id: ENT.valet }),
+      windows: async () => {
+        const s = await stateOf(ENT.windows[0]);
+        callService("cover", s === "open" ? "close_cover" : "open_cover", { entity_id: ENT.windows });
+      },
+    };
+
+    async function refreshStates() {
+      const map = { climate: "c-climate", valet: "c-valet", lock: "c-lock" };
+      for (const [key, id] of Object.entries(map)) {
+        const s = await stateOf(ENT[key]);
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle("on", s === "on" || s === "locked");
+      }
+    }
+
+    document.querySelectorAll(".ctl").forEach(el => {
+      el.addEventListener("click", () => { const a = el.dataset.act; if (ACTIONS[a]) ACTIONS[a](); });
+    });
+    refreshStates();
+    setInterval(refreshStates, 30000);
+  </script>
 </body>
 </html>

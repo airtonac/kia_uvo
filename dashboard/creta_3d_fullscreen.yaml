@@ -1,0 +1,10 @@
+title: Creta 3D
+views:
+  - title: Creta
+    path: creta-3d
+    icon: mdi:car-sports
+    panel: true
+    cards:
+      - type: iframe
+        url: /local/creta3d/index.html
+        aspect_ratio: 56%
