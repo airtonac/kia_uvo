@@ -1,0 +1,4 @@
+# Add this as a new card (or a new view) in any dashboard
+type: iframe
+url: /local/creta3d/surround.html?v=1
+aspect_ratio: 65%
