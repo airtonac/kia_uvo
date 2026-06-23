@@ -404,6 +404,20 @@ SENSOR_DESCRIPTIONS: Final[tuple[SensorEntityDescription, ...]] = (
         device_class=SensorDeviceClass.TIMESTAMP,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
+    SensorEntityDescription(
+        key="remote_control_waiting_time",
+        translation_key="remote_control_waiting_time",
+        icon="mdi:timer-sand",
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        device_class=SensorDeviceClass.DURATION,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="sim_expiry_date",
+        translation_key="sim_expiry_date",
+        icon="mdi:sim",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
 )
 
 
@@ -433,6 +447,10 @@ async def async_setup_entry(
                     coordinator, coordinator.vehicle_manager.vehicles[vehicle_id]
                 )
             )
+        if vehicle.month_trip_info is not None:
+            entities.append(MonthTripStatsEntity(coordinator, vehicle))
+        if vehicle.day_trip_info is not None:
+            entities.append(DayTripStatsEntity(coordinator, vehicle))
         entities.append(
             VehicleEntity(coordinator, coordinator.vehicle_manager.vehicles[vehicle_id])
         )
@@ -596,3 +614,98 @@ class TodaysDailyDrivingStatsEntity(SensorEntity, HyundaiKiaConnectEntity):
     @property
     def unique_id(self):
         return f"{DOMAIN}-todays-daily-driving-stats-{self.vehicle.id}"
+
+
+class MonthTripStatsEntity(SensorEntity, HyundaiKiaConnectEntity):
+    """Current-month trip summary. State = distance driven this month."""
+
+    _attr_has_entity_name = True
+    _attr_name = "Monthly trip distance"
+    _attr_icon = "mdi:map-marker-distance"
+
+    def __init__(self, coordinator, vehicle: Vehicle):
+        super().__init__(coordinator, vehicle)
+
+    @property
+    def native_value(self):
+        info = self.vehicle.month_trip_info
+        if info and info.summary:
+            return info.summary.distance
+        return None
+
+    @property
+    def native_unit_of_measurement(self):
+        return "km"
+
+    @property
+    def state_attributes(self):
+        info = self.vehicle.month_trip_info
+        if not info or not info.summary:
+            return None
+        s = info.summary
+        return {
+            "yyyymm": info.yyyymm,
+            "drive_time_min": s.drive_time,
+            "idle_time_min": s.idle_time,
+            "avg_speed": s.avg_speed,
+            "max_speed": s.max_speed,
+            "days_driven": len(info.day_list) if info.day_list else 0,
+        }
+
+    @property
+    def unique_id(self):
+        return f"{DOMAIN}-month-trip-{self.vehicle.id}"
+
+
+class DayTripStatsEntity(SensorEntity, HyundaiKiaConnectEntity):
+    """Today's trip summary. State = distance driven today."""
+
+    _attr_has_entity_name = True
+    _attr_name = "Daily trip distance"
+    _attr_icon = "mdi:map-marker-distance"
+
+    def __init__(self, coordinator, vehicle: Vehicle):
+        super().__init__(coordinator, vehicle)
+
+    @property
+    def native_value(self):
+        info = self.vehicle.day_trip_info
+        if info and info.summary:
+            return info.summary.distance
+        return None
+
+    @property
+    def native_unit_of_measurement(self):
+        return "km"
+
+    @property
+    def state_attributes(self):
+        info = self.vehicle.day_trip_info
+        if not info or not info.summary:
+            return None
+        s = info.summary
+        trips = []
+        for t in info.trip_list or []:
+            trips.append(
+                {
+                    "time": t.hhmmss,
+                    "distance": t.distance,
+                    "drive_time_min": t.drive_time,
+                    "idle_time_min": t.idle_time,
+                    "avg_speed": t.avg_speed,
+                    "max_speed": t.max_speed,
+                }
+            )
+        return {
+            "yyyymmdd": info.yyyymmdd,
+            "drive_time_min": s.drive_time,
+            "idle_time_min": s.idle_time,
+            "avg_speed": s.avg_speed,
+            "max_speed": s.max_speed,
+            "trip_count": len(trips),
+            "trips": trips,
+        }
+
+    @property
+    def unique_id(self):
+        return f"{DOMAIN}-day-trip-{self.vehicle.id}"

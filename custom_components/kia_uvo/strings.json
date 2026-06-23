@@ -252,6 +252,12 @@
       },
       "ev_v2l_target_soc": {
         "name": "V2L target SoC"
+      },
+      "remote_control_waiting_time": {
+        "name": "Remote Control Cooldown"
+      },
+      "sim_expiry_date": {
+        "name": "Connected Services SIM Expiry"
       }
     },
     "binary_sensor": {
@@ -461,6 +467,18 @@
       },
       "ev_v2x_status": {
         "name": "V2X status"
+      },
+      "engine_oil_warning_is_on": {
+        "name": "Engine Oil Warning"
+      },
+      "tail_lamp_is_on": {
+        "name": "Tail Lamp"
+      },
+      "hazard_is_on": {
+        "name": "Hazard Lights"
+      },
+      "remote_control_available": {
+        "name": "Remote Control Available"
       }
     },
     "lock": {

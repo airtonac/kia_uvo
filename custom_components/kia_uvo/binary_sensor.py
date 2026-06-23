@@ -538,6 +538,39 @@ SENSOR_DESCRIPTIONS: Final[tuple[HyundaiKiaBinarySensorEntityDescription, ...]] 
         icon="mdi:ev-station",
         is_on=lambda vehicle: vehicle.ev_v2x_status,
     ),
+    HyundaiKiaBinarySensorEntityDescription(
+        key="engine_oil_warning_is_on",
+        translation_key="engine_oil_warning_is_on",
+        is_on=lambda vehicle: vehicle.engine_oil_warning_is_on,
+        on_icon="mdi:oil-level",
+        off_icon="mdi:oil",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    HyundaiKiaBinarySensorEntityDescription(
+        key="tail_lamp_is_on",
+        translation_key="tail_lamp_is_on",
+        is_on=lambda vehicle: vehicle.tail_lamp_is_on,
+        on_icon="mdi:car-parking-lights",
+        off_icon="mdi:car-parking-lights",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    HyundaiKiaBinarySensorEntityDescription(
+        key="hazard_is_on",
+        translation_key="hazard_is_on",
+        is_on=lambda vehicle: vehicle.hazard_is_on,
+        on_icon="mdi:hazard-lights",
+        off_icon="mdi:hazard-lights",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    HyundaiKiaBinarySensorEntityDescription(
+        key="remote_control_available",
+        translation_key="remote_control_available",
+        is_on=lambda vehicle: vehicle.remote_control_available,
+        on_icon="mdi:remote",
+        off_icon="mdi:remote-off",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
 )
 
 
