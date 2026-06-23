@@ -1,0 +1,155 @@
+title: Creta 3D
+views:
+  - title: Creta
+    path: creta-3d
+    icon: mdi:car-sports
+    type: sections
+    max_columns: 2
+    sections:
+      # ===== HERO: rotatable 3D car =====
+      - type: grid
+        column_span: 2
+        cards:
+          - type: iframe
+            url: /local/creta3d/index.html
+            aspect_ratio: 45%
+
+      # ===== 360 CAMERA =====
+      - type: grid
+        cards:
+          - type: heading
+            heading: 360° Surround View
+            icon: mdi:cctv
+          - type: picture-entity
+            entity: image.creta_360_surround_view
+            name: 360° Surround View
+            show_state: false
+            show_name: false
+            tap_action:
+              action: more-info
+          - type: horizontal-stack
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Capture 360°
+                icon: mdi:cctv
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.creta_capture_360_view
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Refresh
+                icon: mdi:refresh
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.creta_force_refresh
+          - type: markdown
+            content: "*Capture & horn need the car parked, engine off.*"
+
+      # ===== CONTROLS =====
+      - type: grid
+        cards:
+          - type: heading
+            heading: Controls
+            icon: mdi:tune
+          - type: tile
+            entity: lock.creta_door_lock
+            name: Doors
+          - type: tile
+            entity: switch.creta_valet_mode
+            name: Valet Mode
+          - type: tile
+            entity: switch.creta_climate
+            name: Climate (remote start)
+          - type: horizontal-stack
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Horn & Hazards
+                icon: mdi:bullhorn
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.creta_horn_hazards
+          - type: entities
+            title: Windows
+            show_header_toggle: false
+            entities:
+              - entity: cover.creta_front_left_window
+                name: Front Left
+              - entity: cover.creta_front_right_window
+                name: Front Right
+              - entity: cover.creta_back_left_window
+                name: Back Left
+              - entity: cover.creta_back_right_window
+                name: Back Right
+
+      # ===== STATUS =====
+      - type: grid
+        cards:
+          - type: heading
+            heading: Status
+            icon: mdi:gauge
+          - type: glance
+            columns: 3
+            entities:
+              - entity: sensor.creta_fuel_level
+                name: Fuel
+              - entity: sensor.creta_fuel_driving_range
+                name: Range
+              - entity: sensor.creta_car_battery_level
+                name: 12V
+              - entity: binary_sensor.creta_remote_control_available
+                name: Remote OK
+              - entity: sensor.creta_remote_control_cooldown
+                name: Cooldown
+              - entity: sensor.creta_last_updated_at
+                name: Updated
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.creta_daily_trip_distance
+                name: Distance today
+              - entity: sensor.creta_monthly_trip_distance
+                name: Distance this month
+              - entity: sensor.creta_connected_services_sim_expiry
+                name: Bluelink SIM expiry
+
+      # ===== MAP =====
+      - type: grid
+        cards:
+          - type: heading
+            heading: Location
+            icon: mdi:map-marker
+          - type: map
+            default_zoom: 16
+            entities:
+              - entity: device_tracker.creta_location
+
+      # ===== DIAGNOSTICS =====
+      - type: grid
+        cards:
+          - type: heading
+            heading: Diagnostics
+            icon: mdi:stethoscope
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: binary_sensor.creta_engine_oil_warning
+                name: Engine Oil
+              - entity: binary_sensor.creta_headlamp_status
+                name: Headlamps
+              - entity: binary_sensor.creta_tail_lamp
+                name: Tail Lamp
+              - entity: binary_sensor.creta_hazard_lights
+                name: Hazards
+              - entity: sensor.creta_location_last_updated
+                name: Location updated
