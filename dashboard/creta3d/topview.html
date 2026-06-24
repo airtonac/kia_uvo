@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Creta Top View</title>
+  <style>
+    html,body{margin:0;height:100%;width:100%;overflow:hidden;
+      background:radial-gradient(circle at 50% 40%,#1b2735 0%,#0a0e14 75%);
+      font-family:-apple-system,Roboto,Arial,sans-serif;}
+    #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+    canvas{max-width:96vw;max-height:88vh;border-radius:14px;
+      box-shadow:0 10px 40px rgba(0,0,0,.55);}
+    .hud{position:fixed;top:12px;left:16px;color:#e6edf3;text-shadow:0 1px 4px #000;z-index:5;pointer-events:none;}
+    .hud .t{font-size:18px;font-weight:800;letter-spacing:.5px;} .hud .s{font-size:11px;opacity:.7;}
+    #cap{position:fixed;top:12px;right:12px;z-index:6;background:rgba(20,28,38,.6);
+      border:1px solid rgba(255,255,255,.18);color:#e6edf3;border-radius:10px;padding:8px 12px;
+      font-size:13px;cursor:pointer;backdrop-filter:blur(8px);}
+    #cap:active{transform:scale(.95);}
+    #msg{position:fixed;bottom:12px;width:100%;text-align:center;color:#8b949e;font-size:11px;z-index:5;pointer-events:none;}
+  </style>
+</head>
+<body>
+  <div id="wrap"><canvas id="cv"></canvas></div>
+  <div class="hud"><div class="t">CRETA TOP VIEW</div><div class="s">bird's-eye 360° · last capture</div></div>
+  <button id="cap">📷 New capture</button>
+  <div id="msg">loading…</div>
+
+  <script>
+    // bird's-eye panel = last segment of the SVM composite atlas
+    const ATLAS_W = 4472, BIRD_X = 3840, BIRD_W = 632, BIRD_H = 720;
+    const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+    const msg = (m)=>document.getElementById('msg').textContent = m;
+
+    function token(){ try{const t=JSON.parse(localStorage.getItem('hassTokens'));if(t&&t.access_token)return t.access_token;}catch(e){}
+      for(const k of Object.keys(localStorage)){try{const v=JSON.parse(localStorage.getItem(k));if(v&&v.access_token)return v.access_token;}catch(e){}} return null; }
+
+    function draw(img){
+      // scale up for crispness
+      const S = 1.4;
+      cv.width = BIRD_W*S; cv.height = BIRD_H*S;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, BIRD_X, 0, BIRD_W, BIRD_H, 0, 0, cv.width, cv.height);
+      msg("bird's-eye surround · tap New capture to refresh (engine off)");
+    }
+
+    function loadStatic(){
+      const img = new Image();
+      img.onload = ()=>draw(img);
+      img.onerror = ()=>msg('no image yet — tap New capture');
+      img.src = 'svm.jpg?' + Date.now();
+    }
+
+    async function loadLive(){
+      const tok = token();
+      if(!tok){ loadStatic(); return; }
+      try{
+        const st = await fetch('/api/states/image.creta_360_surround_view',{headers:{Authorization:'Bearer '+tok}}).then(r=>r.json());
+        const url = st && st.attributes && st.attributes.entity_picture;
+        if(!url) return loadStatic();
+        const blob = await fetch(url,{headers:{Authorization:'Bearer '+tok}}).then(r=>r.ok?r.blob():Promise.reject());
+        const img = new Image(); img.onload=()=>draw(img); img.src = URL.createObjectURL(blob);
+      }catch(e){ loadStatic(); }
+    }
+
+    document.getElementById('cap').onclick = async ()=>{
+      const tok = token(); if(!tok){ msg('open inside Home Assistant'); return; }
+      msg('capturing… engine must be off (~30s)');
+      try{
+        await fetch('/api/services/button/press',{method:'POST',
+          headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},
+          body:JSON.stringify({entity_id:'button.creta_capture_360_view'})});
+        setTimeout(loadLive, 35000);
+      }catch(e){ msg('capture failed: '+e.message); }
+    };
+
+    // default to the well-lit static capture; use ?live=1 to pull the latest
+    if (location.search.includes('live=1')) loadLive(); else loadStatic();
+  </script>
+</body>
+</html>
